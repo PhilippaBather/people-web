@@ -3,11 +3,13 @@ package com.batherphilippa.peopledbweb.data;
 import com.batherphilippa.peopledbweb.business.model.Person;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+//@Component
 public class PersonDataLoader implements ApplicationRunner {
     private PersonRepository personRepository;
 
