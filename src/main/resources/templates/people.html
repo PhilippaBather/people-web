@@ -20,6 +20,7 @@
                         <th scope="col" th:text="#{people.table.header.dob}">DOB</th>
                         <th scope="col" class="d-sm-none d-md-table-cell" th:text="#{people.table.header.email}">Email</th>
                         <th scope="col" th:text="#{people.table.header.salary}">Salary</th>
+                        <th scope="col" th:text="#{people.table.header.photo}">Photo</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -33,7 +34,9 @@
                         <td th:text="${person.firstName}">Otto</td>
                         <td th:text="${#temporals.format(person.dob, 'MMMM dd, yyyy')}">24 July 2000</td>
                         <td th:text="${person.email}" class="d-sm-none d-md-table-cell">@mdo</td>
-                        <td th:text="${{person.salary}}">£100,000</td>
+                        <td th:text="${{person.salary}}" class="text-end">£100,000</td>
+                        <td><img th:if="${person.photoFilename}" th:src="@{/people/images/{filename}(filename=${person.photoFilename})}" height="32px" width="32px"/>
+                        </td>
                     </tr>
                     <tr th:remove="all">
                         <th scope="row">1</th>
@@ -63,8 +66,13 @@
     </div>
 
     <div class="col-8 mx-auto my-5" >
+
+        <div class="alert alert-danger" role="alert" th:text="${errorMsg}" th:if="${errorMsg}">
+            A simple danger alert—check it out!
+        </div>
+
         <h1 th:text="#{people.form.title}">People Form</h1>
-        <form th:object="${person}" method="post" novalidate>
+        <form th:object="${person}" method="post" novalidate enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="firstName" class="form-label" th:text="#{people.form.label.firstname}">First Name</label>
                 <input type="text" class="form-control" id="firstName" th:field="*{firstName}" th:errorclass="is-invalid" aria-describedby="firstNameHelp">
@@ -98,6 +106,13 @@
                 <input type="number" class="form-control" id="salary" th:field="*{salary}" th:errorclass="is-invalid" aria-describedby="salaryHelp">
                 <div class="valid-feedback" id="validationSalary" th:errors="*{salary}">
                     Please enter your salary.
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="photoFilename" class="form-label" th:text="#{people.form.label.photo}" >Photo File</label>
+                <input type="file"  class="form-control" id="photoFilename" th:field="*{photoFilename}" th:errorclass="is-invalid" aria-describedby="photoFilenameHelp">
+                <div class="valid-feedback" id="validationPhotoFilename" th:errors="*{photoFilename}">
+                    Please upload a photo image.
                 </div>
             </div>
             <input type="hidden" th:field="*{id}"/>
