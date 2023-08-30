@@ -10,7 +10,7 @@ import java.util.Locale;
 
 @Component
 public class CurrencyFormatter implements Formatter<BigDecimal> {
-    private final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.UK);
+    private final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance();
 
     @Override
     public BigDecimal parse(String text, Locale locale) throws ParseException {

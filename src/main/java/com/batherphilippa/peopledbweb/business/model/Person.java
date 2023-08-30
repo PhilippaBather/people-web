@@ -31,4 +31,6 @@ public class Person {
     private String email;
     @DecimalMin(value="800.00", message = "Salary must be at least £800.")
     private BigDecimal salary;
+    @NotEmpty
+    private String photoFilename;
 }
