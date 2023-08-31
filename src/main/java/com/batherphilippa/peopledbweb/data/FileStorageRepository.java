@@ -11,7 +11,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -42,17 +43,15 @@ public class FileStorageRepository {
             throw new StorageException(format("Storage location not found: %s", e));
         }
     }
-    public void deleteAllByName(Iterable<String> filenames) {
+    public void deleteAllByName(Collection<String> filenames) {
         try {
-            for (String filename : filenames) {
+            for (String filename : filenames.stream()
+                    .filter(filename -> filename != null).collect(Collectors.toSet())) {
                 Path filePath = Path.of(storageLocation).resolve(filename).normalize();
                 Files.deleteIfExists(filePath);
             }
         } catch (IOException e) {
             throw new StorageException(format("Error deleting file: %s"), e);
         }
-
-
-
     }
 }
