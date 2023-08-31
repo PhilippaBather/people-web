@@ -9,7 +9,7 @@
 <body>
     <div class="col-md-8 col-sm-10 mx-auto mt-5 my-5">
         <h1 th:text="#{people.table.title}">People List</h1>
-            <form method="post">
+            <form method="post" enctype="multipart/form-data">
                 <table class="table table-bordered table-sm" >
                     <thead>
                     <tr>
@@ -59,8 +59,24 @@
                     </tbody>
                 </table>
 
-                <button type="submit" class="btn btn-danger mb-5 me-2" name="edit" value="true" th:text="#{people.table.button.edit}">Edit</button>
-                <button type="submit" class="btn btn-danger mb-5" name="delete" value="true" th:text="#{people.table.button.delete}">Delete</button>
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${people.first} ? 'disabled'"><a class="page-link" th:href="@{people(page=${people.number - 1})}">Previous</a></li>
+                        <li th:each="page : ${#numbers.sequence(0, people.totalPages - 1)}" class="page-item" th:classappend="${people.number} == ${page} ? 'active'"><a class="page-link" th:href="@{people(page=${page})}" th:text="${page + 1}">1</a></li>
+                        <li th:remove="all" class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li th:remove="all" class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item" th:classappend="${people.last} ? 'disabled'"><a class="page-link" th:href="@{people(page=${people.number + 1})}">Next</a></li>
+                    </ul>
+                </nav>
+
+                <div class="mb-3">
+                    <label for="csvFile" class="form-label" th:text="#{people.form.label.photo}">CSV File</label>
+                    <input type="file"  class="form-control" id="csvFile" name="csvFile">
+                </div>
+
+                <button type="submit" class="btn btn-primary mb-5 me-2" name="action" value="edit" th:text="#{people.table.button.edit}">Edit</button>
+                <button type="submit" class="btn btn-success mb-5 me-2" name="action" value="import" th:text="#{people.table.button.import}">Import CSV</button>
+                <button type="submit" class="btn btn-danger mb-5" name="action" value="delete" th:text="#{people.table.button.delete}">Delete</button>
 
             </form>
     </div>
@@ -110,7 +126,7 @@
             </div>
             <div class="mb-3">
                 <label for="photoFilename" class="form-label" th:text="#{people.form.label.photo}" >Photo File</label>
-                <input type="file"  class="form-control" id="photoFilename" th:field="*{photoFilename}" th:errorclass="is-invalid" aria-describedby="photoFilenameHelp">
+                <input type="file"  class="form-control" id="photoFilename" name="photoFilename" th:field="*{photoFilename}" th:errorclass="is-invalid" aria-describedby="photoFilenameHelp">
                 <div class="valid-feedback" id="validationPhotoFilename" th:errors="*{photoFilename}">
                     Please upload a photo image.
                 </div>
