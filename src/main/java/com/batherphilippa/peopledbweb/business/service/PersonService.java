@@ -4,14 +4,17 @@ import com.batherphilippa.peopledbweb.business.model.Person;
 import com.batherphilippa.peopledbweb.data.FileStorageRepository;
 import com.batherphilippa.peopledbweb.data.PersonRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.zip.ZipInputStream;
 
 @Service
 public class PersonService {
@@ -40,6 +43,10 @@ public class PersonService {
         return personRepository.findAllById(longs);
     }
 
+    public Page<Person> findAll(Pageable pageable) {
+        return personRepository.findAll(pageable);
+    }
+
     public void deleteAllById(Iterable<Long> ids) {
 //        Iterable<Person> peopleForDeletion = personRepository.findAllById(ids);
 //        Stream<Person> peopleStream = StreamSupport.stream(peopleForDeletion.spliterator(), false);
@@ -50,5 +57,31 @@ public class PersonService {
         Set<String> filenames = personRepository.findFilenamesByIds(ids);
         personRepository.deleteAllById(ids);
         fileStorageRepository.deleteAllByName(filenames);
+    }
+
+    // assumes file streamed is a zip file; doesn't check file extension
+    // file read as a byte stream
+    // this needs to be read and interpreted as a zip file
+    public void importCSV(InputStream csvFileStream) {
+        try {
+            // think of ZipInputStream as a filter and hose
+            // the csvFileStream that coming from it
+            ZipInputStream zipINputStream = new ZipInputStream(csvFileStream);
+            // jumps to first file within the zip file
+            zipINputStream.getNextEntry();
+            // stream of bytes to chars
+            InputStreamReader inputStreamReader = new InputStreamReader(zipINputStream);
+            // read lines of chars
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            // returns a stream of strings
+            bufferedReader
+                    .lines()
+                    .skip(1)
+                    .limit(20)
+                    .map(Person::parse)
+                    .forEach(personRepository::save);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
